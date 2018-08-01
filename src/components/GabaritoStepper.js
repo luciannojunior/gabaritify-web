@@ -6,6 +6,7 @@ import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import InfoGabarito from './InfoGabarito';
 
 const styles = theme => ({
   root: {
@@ -30,7 +31,7 @@ function getSteps() {
 function getStepContent(step) {
   switch (step) {
     case 0:
-      return 'Step 1: Select campaign settings...';
+      return (<InfoGabarito/>);
     case 1:
       return 'Step 2: What is an ad group anyways?';
     case 2:
@@ -138,7 +139,8 @@ class GabaritoStepper extends React.Component {
             </div>
           ) : (
             <div>
-              <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+                {getStepContent(activeStep)}
+              <Typography className={classes.instructions}></Typography>
               <div>
                 <Button
                   disabled={activeStep === 0}
