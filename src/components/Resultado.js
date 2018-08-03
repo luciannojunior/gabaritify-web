@@ -19,9 +19,8 @@ const styles = theme => ({
 
 class Resultado extends React.Component {
   render() {
-    const { classes, gabarito, respostas, nQuestoes} = this.props;
+    const { classes, gabarito, respostas, nQuestoes } = this.props;
 
-    console.log(gabarito);
     console.log(respostas);
 
     const mapResposta = (numero) => {
@@ -35,23 +34,23 @@ class Resultado extends React.Component {
             case 3:
                 return 'D'
             default:
-                return '-';
+                return numero;
         }
     };
 
     let acertos = 0;
 
-    gabarito.forEach((q, i) => {
-        if (respostas[i] == q) acertos++
+    gabarito.map(mapResposta).forEach((q, i) => {
+        if (respostas[i] === q) acertos++
     });
 
-    const strResposta = Object.values(respostas).map(mapResposta).join(' ');
+    const strResposta = Object.values(respostas).join(' ');
     const strGabarito = gabarito.map(mapResposta).join(' ');
 
 
     return <div className={classes.root}>
         <Typography variant="title" gutterBottom align="center">
-            O acerto foi de {nQuestoes/acertos * 100}% das respostas. ({acertos} de {nQuestoes})
+            O acerto foi de {(acertos/nQuestoes * 100).toFixed(2)}% das respostas. ({acertos} de {nQuestoes})
         </Typography>
         <Typography variant="subheading" gutterBottom align="center">
             O gabarito tem as respostas {strResposta}

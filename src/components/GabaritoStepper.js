@@ -32,14 +32,14 @@ function getSteps() {
   return ['Indique os dados sobre o exame', 'Envie a imagem do gabarito', 'Resultado'];
 }
 
-function getStepContent(step, onChange) {
+function getStepContent(step, onChange, state) {
   switch (step) {
     case 0:
       return (<InfoGabarito onChange={onChange}/>);
     case 1:
       return (<EnviarImagem onChange={onChange}/>);
     case 2:
-      return (<Resultado/>)
+      return (<Resultado {...state}/>)
     default:
       return 'Unknown step';
   }
@@ -84,7 +84,6 @@ class GabaritoStepper extends React.Component {
   };
 
   enviarDados = () => {
-    console.log(this.state);
     let data = new FormData();
     data.append('imagem', this.state.imagem, this.state.imagem.name);
     data.append('respostas', Object.values(this.state.respostas).join(''));
@@ -166,12 +165,12 @@ class GabaritoStepper extends React.Component {
             <div>
                 {getStepContent(activeStep, (childState) => {
                   this.setState({...this.state, ...childState});
-                })}
+                }, this.state)}
               <Typography className={classes.instructions}></Typography>
               <div>
                 <Button
                   disabled={activeStep === 0}
-                  onClick={this.handleBack}
+                  onClick={this.handleReset}
                   className={classes.button}
                 >
                   Voltar
