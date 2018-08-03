@@ -7,12 +7,14 @@ import GabaritoStepper from '../components/GabaritoStepper';
 const styles = {
   root: {
     flexGrow: 1,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center'
   },
 };
 
 function MainScreen(props) {
   const { classes } = props;
-  const { match: { params: { id }}} = props;
   return (
     <div className={classes.root}>
       <Typography noWrap>{'Seja bem-vindo! Siga os passos para efetuar a correção do gabarito'}</Typography>

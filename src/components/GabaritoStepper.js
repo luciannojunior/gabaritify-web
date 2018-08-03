@@ -7,6 +7,9 @@ import StepButton from '@material-ui/core/StepButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import InfoGabarito from './InfoGabarito';
+import EnviarImagem from './EnviarImagem';
+import axios from 'axios';
+
 
 const styles = theme => ({
   root: {
@@ -28,12 +31,12 @@ function getSteps() {
   return ['Indique os dados sobre o exame', 'Envie a imagem do gabarito', 'Resultado'];
 }
 
-function getStepContent(step) {
+function getStepContent(step, onChange) {
   switch (step) {
     case 0:
-      return (<InfoGabarito/>);
+      return (<InfoGabarito onChange={onChange}/>);
     case 1:
-      return 'Step 2: What is an ad group anyways?';
+      return (<EnviarImagem onChange={onChange}/>);
     case 2:
       return 'Step 3: This is the bit I really care about!';
     default:
@@ -45,6 +48,7 @@ class GabaritoStepper extends React.Component {
   state = {
     activeStep: 0,
     completed: {},
+    loading: false
   };
 
   totalSteps = () => {
@@ -61,10 +65,29 @@ class GabaritoStepper extends React.Component {
       activeStep = steps.findIndex((step, i) => !(i in this.state.completed));
     } else {
       activeStep = this.state.activeStep + 1;
+      if (activeStep === 2){
+        this.setState({...this.state, loading: true});
+        return this.enviarDados().then(()=>{
+          return this.setState({
+            activeStep,
+            loading: false
+          });
+        });
+      }
+      this.setState({
+        activeStep
+      });
     }
-    this.setState({
-      activeStep,
-    });
+    
+  };
+
+  enviarDados = () => {
+    console.log(this.state);
+    let data = new FormData();
+    data.append('imagem', this.state.imagem, this.state.imagem.name);
+    data.append('respostas', Object.values(this.state.respostas).join(''));
+
+    return axios.post('http://localhost:8085/api/gabarito', data, { headers:  { 'content-type': 'multipart/form-data'}});
   };
 
   handleBack = () => {
@@ -139,7 +162,9 @@ class GabaritoStepper extends React.Component {
             </div>
           ) : (
             <div>
-                {getStepContent(activeStep)}
+                {getStepContent(activeStep, (childState) => {
+                  this.setState({...this.state, ...childState});
+                })}
               <Typography className={classes.instructions}></Typography>
               <div>
                 <Button
@@ -147,7 +172,7 @@ class GabaritoStepper extends React.Component {
                   onClick={this.handleBack}
                   className={classes.button}
                 >
-                  Back
+                  Voltar
                 </Button>
                 <Button
                   variant="contained"
@@ -155,18 +180,8 @@ class GabaritoStepper extends React.Component {
                   onClick={this.handleNext}
                   className={classes.button}
                 >
-                  Next
+                  Próximo
                 </Button>
-                {activeStep !== steps.length &&
-                  (this.state.completed[this.state.activeStep] ? (
-                    <Typography variant="caption" className={classes.completed}>
-                      Step {activeStep + 1} already completed
-                    </Typography>
-                  ) : (
-                    <Button variant="contained" color="primary" onClick={this.handleComplete}>
-                      {this.completedSteps() === this.totalSteps() - 1 ? 'Finish' : 'Complete Step'}
-                    </Button>
-                  ))}
               </div>
             </div>
           )}
