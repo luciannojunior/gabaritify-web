@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import InfoGabarito from './InfoGabarito';
 import EnviarImagem from './EnviarImagem';
 import axios from 'axios';
+import Resultado from './Resultado';
 
 
 const styles = theme => ({
@@ -38,7 +39,7 @@ function getStepContent(step, onChange) {
     case 1:
       return (<EnviarImagem onChange={onChange}/>);
     case 2:
-      return 'Step 3: This is the bit I really care about!';
+      return (<Resultado/>)
     default:
       return 'Unknown step';
   }
@@ -67,10 +68,11 @@ class GabaritoStepper extends React.Component {
       activeStep = this.state.activeStep + 1;
       if (activeStep === 2){
         this.setState({...this.state, loading: true});
-        return this.enviarDados().then(()=>{
+        return this.enviarDados().then((resposta)=>{
           return this.setState({
             activeStep,
-            loading: false
+            loading: false,
+            gabarito: resposta.data
           });
         });
       }
@@ -87,7 +89,7 @@ class GabaritoStepper extends React.Component {
     data.append('imagem', this.state.imagem, this.state.imagem.name);
     data.append('respostas', Object.values(this.state.respostas).join(''));
 
-    return axios.post('http://localhost:8085/api/gabarito', data, { headers:  { 'content-type': 'multipart/form-data'}});
+    return axios.post('http://localhost:5000/upload', data, { headers:  { 'content-type': 'multipart/form-data'}});
   };
 
   handleBack = () => {
